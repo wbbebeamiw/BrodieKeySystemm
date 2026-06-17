@@ -27,10 +27,6 @@ jobs:
             -o BrodieKeySystem.dylib \
             Sources/BrodieKeySystem.m
 
-      - name: Sign dylib (ad-hoc)
-        run: |
-          codesign -f -s - BrodieKeySystem.dylib
-
       - name: Upload dylib artifact
         uses: actions/upload-artifact@v4
         with:
