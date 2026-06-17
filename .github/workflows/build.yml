@@ -1,0 +1,38 @@
+name: Build BrodieScript KeySystem Dylib
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Compile dylib
+        run: |
+          xcrun clang \
+            -arch arm64 \
+            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+            -miphoneos-version-min=14.0 \
+            -fobjc-arc \
+            -framework UIKit \
+            -framework Foundation \
+            -dynamiclib \
+            -install_name @rpath/BrodieKeySystem.dylib \
+            -o BrodieKeySystem.dylib \
+            Sources/BrodieKeySystem.m
+
+      - name: Sign dylib (ad-hoc)
+        run: |
+          codesign -f -s - BrodieKeySystem.dylib
+
+      - name: Upload dylib artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: BrodieKeySystem
+          path: BrodieKeySystem.dylib
